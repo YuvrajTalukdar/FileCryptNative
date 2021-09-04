@@ -99,10 +99,14 @@ public class MainActivity extends AppCompatActivity implements
     private SharedPreferences settings_reader;
     private SharedPreferences.Editor settings_editor;
     //other vars
+    protected ArrayList<vault_info> vault_info_list;
+    protected ArrayList<vault_info> vault_info_list_temp=new ArrayList<>();
     protected ArrayList<explore_vault_fragment.vault_data> vault_data_list;
+    protected ArrayList<explore_vault_fragment.vault_data> vault_data_list_temp;
     private database db;
     private AES aes_handler;
-    private String password="",vault_path="";
+    private String password,vault_path="";
+    FileCryptNativeApplication application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements
 
         db=new database(this);
         aes_handler=new AES();
+        vault_info_list=db.get_all_data();
 
         //initializing search appbar
         actionBar = getSupportActionBar();
@@ -142,13 +147,22 @@ public class MainActivity extends AppCompatActivity implements
                     if(fab_clicked)
                     {   onFabButtonClicked();}
                 }
-                else if(tab.getPosition()==1 && selected_item_index_list.size()>0)
+                else if(tab.getPosition()==1)
                 {
-                    initialize_option_app_bar();
-                    selected_item_count.setText(Integer.toString(selected_item_index_list.size()));
+                    if(selected_item_index_list.size()>0) {
+                        initialize_option_app_bar();
+                        selected_item_count.setText(Integer.toString(selected_item_index_list.size()));
+                    }
                 }
                 tab_id=tab.getPosition();
                 viewPager2.setCurrentItem(tab.getPosition());
+                if(tab_id==0)
+                {   search_edit_text.setText(search_vault);}
+                else if(tab_id==1)
+                {
+                    if(selected_item_index_list.size()==0)
+                    {   search_edit_text.setText(search_file);}
+                }
             }
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
@@ -192,8 +206,12 @@ public class MainActivity extends AppCompatActivity implements
             onFabButtonClicked();
         });
 
-        FileCryptNativeApplication application=(FileCryptNativeApplication) getApplicationContext();
+        application=(FileCryptNativeApplication) getApplicationContext();
         vault_data_list=application.vault_data_list;
+        vault_data_list_temp=application.vault_data_list_temp;
+        password=application.password;
+        System.out.println("temp_size=== "+vault_data_list_temp.size());
+        System.out.println("pass=== "+password);
     }
     /*--------------------------------------------------------------------Option Menu----------------------------------------------------------------------------------------*/
     @Override
@@ -299,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements
             if(decrypted_data.get_decryption_success_status())
             {
                 this.password=password;
+                application.password=password;
                 openVaultDialog.dismiss();
                 this.vault_path=appPath+"/"+vault_name;
                 load_vault();
@@ -325,10 +344,12 @@ public class MainActivity extends AppCompatActivity implements
     {
         fab_animation();
 
+        application.password="";
         password="";
         vault_path="";
         int end=vault_data_list.size();
         vault_data_list.clear();
+        vault_data_list_temp.clear();
         exploreVaultFragment= (explore_vault_fragment) getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
         exploreVaultFragment.set_vault_status();
         exploreVaultFragment.select_all_item(false);
@@ -420,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /*-------------------------------------------------------------------Search appbar functions---------------------------------------------------------------------------------*/
-    private String search_text="";
+    private String search_file="",search_vault="";
     private short delay = 800;
     private long last_text_edit = 0;
     private Handler handler = new Handler();
@@ -431,14 +452,51 @@ public class MainActivity extends AppCompatActivity implements
     };
     private void search()
     {
-        System.out.println("check45==="+search_text);
         if(viewPager2.getCurrentItem()==0)
         {
-
+            vault_info_list.addAll(vault_info_list_temp);
+            vault_info_list_temp.clear();
+            if(search_vault.length()==0)
+            {
+                vaultFragment=(vault_fragment)getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
+                vaultFragment.notify_change();
+            }
+            else
+            {
+                for (int a = vault_info_list.size() - 1; a >= 0; a--)
+                {
+                    if (!vault_info_list.get(a).vault_name.toLowerCase().contains(search_vault))
+                    {
+                        vault_info_list_temp.add(vault_info_list.get(a));
+                        vault_info_list.remove(a);
+                    }
+                }
+                vaultFragment=(vault_fragment)getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
+                vaultFragment.notify_change();
+            }
         }
-        else if(viewPager2.getCurrentItem()==1)
+        else if(viewPager2.getCurrentItem()==1 && password.length()>0)
         {
-
+            vault_data_list.addAll(vault_data_list_temp);
+            vault_data_list_temp.clear();
+            if(search_file.length()==0)
+            {
+                exploreVaultFragment=(explore_vault_fragment)getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
+                exploreVaultFragment.notify_change();
+            }
+            else
+            {
+                for(int a=vault_data_list.size()-1;a>=0;a--)
+                {
+                    if(!vault_data_list.get(a).file_name.toLowerCase().contains(search_file))
+                    {
+                        vault_data_list_temp.add(vault_data_list.get(a));
+                        vault_data_list.remove(a);
+                    }
+                }
+                exploreVaultFragment=(explore_vault_fragment)getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
+                exploreVaultFragment.notify_change();
+            }
         }
     }
     private void initialize_search_appbar()
@@ -451,7 +509,11 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                search_text=charSequence.toString();
+                //search_text=charSequence.toString();
+                if(tab_id==0)
+                {   search_vault=charSequence.toString();}
+                else if(tab_id==1)
+                {   search_file=charSequence.toString();}
                 handler.removeCallbacks(input_finish_checker);
             }
 

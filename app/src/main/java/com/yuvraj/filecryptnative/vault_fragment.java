@@ -37,6 +37,7 @@ public class vault_fragment extends Fragment {
     private ArrayList<vault_info> vault_info_list;
     private adapter_vaultgrid adapter;
     private GridLayoutManager gridLayoutManager;
+    private MainActivity mainActivity;
 
     public vault_fragment() {
         // Required empty public constructor
@@ -49,8 +50,9 @@ public class vault_fragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,ViewGroup container,Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_vault, container, false);
 
+        mainActivity=(MainActivity)getActivity();
         db=new database(v.getContext());
-        vault_info_list=db.get_all_data();
+        vault_info_list= mainActivity.vault_info_list;
 
         vault_grid_text=v.findViewById(R.id.vault_grid_text);
         recyclerView=v.findViewById(R.id.vault_grid);
@@ -164,6 +166,12 @@ public class vault_fragment extends Fragment {
         else
         {   vault_grid_text.setVisibility(View.VISIBLE);}
     }
+
+    public void notify_item_removed(int index)
+    {   adapter.notifyItemRemoved(index);}
+
+    public void notify_change()
+    {   adapter.notifyDataSetChanged();}
 
     interface Vault_Fragment_Listener
     {
