@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/transparent100"
+    android:weightSum="3"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="0dp"
+    android:layout_gravity="fill_horizontal"
+    android:orientation="vertical">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:hintEnabled="false"
+        app:endIconMode="clear_text">
+        <EditText
+            android:id="@+id/search_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="@drawable/round_ripple"
+            android:textColor="?attr/MediumColor"
+            android:singleLine="true"
+            android:scrollHorizontally="true"
+            android:hint="Search"
+            android:textColorHint="?attr/DeepColor"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingEnd="12dp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+</RelativeLayout>

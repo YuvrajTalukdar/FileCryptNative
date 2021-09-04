@@ -1,0 +1,48 @@
+<resources>
+    <!--Common strings-->
+    <string name="app_name">File Crypt</string>
+    <string name="ok">OK</string>
+    <string name="cancel">CANCEL</string>
+    <string name="password">Enter Password</string>
+    <string name="delete">Delete</string>
+    <!--Context Menu strings-->
+    <string name="about">About</string>
+    <string name="theme">Theme</string>
+    <!--Option appbar strings-->
+    <string name="about_file">About File</string>
+    <string name="rename_file">Rename File</string>
+    <string name="delete_file">Delete File</string>
+    <string name="move_file_out">Move File Out</string>
+    <string name="selected">Selected</string>
+    <!--Theme dialog strings-->
+    <string name="select_theme">Select Theme</string>
+    <!--Create Vault dialog strings-->
+    <string name="create_vault">Create Vault</string>
+    <string name="vaultname">Vault Name</string>
+    <string name="confirm_pass">Confirm Password</string>
+    <!--Vault fragment strings-->
+    <string name="vault_grid_text">No vault present</string>
+    <!--Vault explore fragment strings-->
+    <string name="explore_vault_statust">Vault Closed</string>
+    <!--Open Vault dialog strings-->
+    <string name="open_vault">Open Vault</string>
+    <!--Main Activity Layout strings-->
+    <string name="lock_vault">Lock Vault</string>
+    <string name="add_files">Add Files</string>
+    <!--Rename dialog strings-->
+    <string name="new_name">Enter New Name</string>
+    <!--File Details dialog strings-->
+    <string name="dile_details">Details</string>
+    <string name="File_name">File Name</string>
+    <string name="file_size">File Size</string>
+    <string name="import_date">Import Date</string>
+    <string name="title_activity_image_viewer">image_viewer_activity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+</resources>

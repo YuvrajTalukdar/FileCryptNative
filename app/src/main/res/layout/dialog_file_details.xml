@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/round_ripple_borderless_18dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@drawable/round_ripple_borderless_18dp">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dile_details"
+            android:textColor="?attr/LightColor"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/round_ripple_borderless_bottom25dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.01"
+            android:weightSum="3"
+            android:layout_marginTop="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="45dp"
+                android:textColor="?attr/DeepColor"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:text="@string/File_name"
+                android:textSize="16sp"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingEnd="12dp"/>
+
+            <HorizontalScrollView
+                android:layout_height="45dp"
+                android:layout_width="match_parent"
+                android:background="@drawable/round_ripple_borderless_50dp">
+
+                <TextView
+                    android:id="@+id/file_name_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:textColor="?attr/MediumColor"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:textSize="16sp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingEnd="12dp"/>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.01"
+            android:weightSum="3"
+            android:layout_marginTop="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="45dp"
+                android:textColor="?attr/DeepColor"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:text="@string/file_size"
+                android:textSize="16sp"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingEnd="12dp"/>
+
+            <HorizontalScrollView
+                android:layout_height="45dp"
+                android:layout_width="match_parent"
+                android:background="@drawable/round_ripple_borderless_50dp">
+
+                <TextView
+                    android:id="@+id/file_size_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:textColor="?attr/MediumColor"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:textSize="16sp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingEnd="12dp"/>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.01"
+            android:weightSum="3"
+            android:layout_marginTop="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="110dp"
+                android:layout_height="45dp"
+                android:textColor="?attr/DeepColor"
+                android:singleLine="true"
+                android:scrollHorizontally="true"
+                android:text="@string/import_date"
+                android:textSize="16sp"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingEnd="12dp"/>
+
+            <HorizontalScrollView
+                android:layout_height="45dp"
+                android:layout_width="match_parent"
+                android:background="@drawable/round_ripple_borderless_50dp">
+
+                <TextView
+                    android:id="@+id/import_date_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:textColor="?attr/MediumColor"
+                    android:singleLine="true"
+                    android:scrollHorizontally="true"
+                    android:textSize="16sp"
+                    android:paddingStart="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:paddingEnd="12dp"/>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.01"
+            android:weightSum="3"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/dialog_detail_ok"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_weight="1.375"
+                android:textColor="@color/Black"
+                android:background="@drawable/round_coloured_ripple"
+                android:text="@string/ok" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

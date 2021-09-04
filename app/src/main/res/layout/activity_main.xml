@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Black">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabRippleColor="?attr/DarkColor"
+        app:tabBackground="@drawable/grey_background"
+        app:tabIndicatorColor="?attr/MediumColor"
+        app:tabSelectedTextColor="?attr/MediumColor"
+        app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
+        app:tabTextColor="?attr/DarkColor" />
+
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/lock_vault_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="?attr/MediumColor"
+        android:clickable="true"
+        android:visibility="invisible"
+        android:tint="@color/Black"
+        app:layout_constraintBottom_toTopOf="@+id/add_file_fab"
+        app:layout_constraintEnd_toEndOf="@+id/add_file_fab"
+        app:srcCompat="@drawable/lock_icon" />
+
+    <TextView
+        android:id="@+id/lock_vault_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lock_vault"
+        android:padding="5dp"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        android:clickable="false"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/round_ripple_borderless_50dp"
+        android:textColor="?attr/MediumColor"
+        app:layout_constraintBottom_toBottomOf="@+id/lock_vault_fab"
+        app:layout_constraintEnd_toStartOf="@+id/lock_vault_fab" />
+
+    <TextView
+        android:id="@+id/add_files_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_files"
+        android:padding="5dp"
+        android:textSize="18sp"
+        android:visibility="invisible"
+        android:clickable="false"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/round_ripple_borderless_50dp"
+        android:textColor="?attr/MediumColor"
+        app:layout_constraintBottom_toBottomOf="@+id/add_file_fab"
+        app:layout_constraintEnd_toStartOf="@+id/add_file_fab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/add_file_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:backgroundTint="?attr/MediumColor"
+        android:clickable="true"
+        android:visibility="invisible"
+        android:tint="@color/Black"
+        app:layout_constraintBottom_toTopOf="@+id/fab"
+        app:layout_constraintEnd_toEndOf="@+id/fab"
+        app:srcCompat="@drawable/add_file_icon" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="20dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="50dp"
+        android:backgroundTint="?attr/MediumColor"
+        android:clickable="true"
+        android:tint="@color/Black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/add_icon" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

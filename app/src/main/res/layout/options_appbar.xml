@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/transparent100"
+    android:weightSum="3"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingTop="0dp"
+    android:layout_gravity="fill_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/select_all_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:buttonTint="?attr/MediumColor" />
+
+            <TextView
+                android:id="@+id/selected_item_count"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="6dp"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="?attr/MediumColor"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/selected"
+                android:textSize="20sp"
+                android:textColor="?attr/DeepColor"
+                android:gravity="center"/>
+        </LinearLayout>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/rename_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/round_ripple_borderless_50dp"
+                android:contentDescription="@string/delete_file"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:elevation="2dp"
+                android:src="@drawable/rename_icon"
+                android:textAllCaps="false"/>
+            <ImageButton
+                android:id="@+id/delete_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/round_ripple_borderless_50dp"
+                android:contentDescription="@string/delete_file"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:elevation="2dp"
+                android:src="@drawable/icon_delete"
+                android:textAllCaps="false"/>
+            <ImageButton
+                android:id="@+id/file_move_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/round_ripple_borderless_50dp"
+                android:contentDescription="@string/delete_file"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:elevation="2dp"
+                android:src="@drawable/move_file_icon"
+                android:textAllCaps="false"/>
+            <ImageButton
+                android:id="@+id/file_about_button"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/round_ripple_borderless_50dp"
+                android:contentDescription="@string/delete_file"
+                android:padding="5dp"
+                android:scaleType="fitCenter"
+                android:elevation="2dp"
+                android:src="@drawable/about_icon"
+                android:textAllCaps="false"/>
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

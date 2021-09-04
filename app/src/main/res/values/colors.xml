@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="Black">#000000</color>
+    <color name="Grey">#252525</color>
+    <color name="lightBackgroundColor">#3D3D3D</color>
+    <color name="translucentGrey">#B32E2E2E</color>
+    <!-- Blue Color Scheme -->
+    <color name="DeepBlue">#227F76</color>
+    <color name="MediumBlue">#03DAC5</color>
+    <color name="LightBlue">#4CD6C9</color>
+    <color name="Teal">#66F9B0</color>
+    <!-- Green Color Scheme -->
+    <color name="DarkGreen">#972E9900</color>
+    <color name="MediumGreen">#5CEF1C</color>
+    <color name="LightGreen">#95E868</color>
+    <color name="YellowishGreen">#CDDC39</color>
+    <!-- Red Color Scheme -->
+    <color name="DarkRed">#9B0000</color>
+    <color name="MediumRed">#FF0000</color>
+    <color name="LightRed">#E13535</color>
+    <color name="Orange">#ED3F08</color>
+    <!-- Grey Color Scheme -->
+    <color name="DarkGrey">#202022</color>
+    <color name="MediumGrey">#92FFF7F7</color>
+    <color name="LightGrey">#D2DBD5D5</color>
+    <color name="White">#ffffff</color>
+    <!-- Violet Color Scheme -->
+    <color name="DarkViolet">#6D1DFF</color>
+    <color name="MediumViolet">#975CFF</color>
+    <color name="LightViolet">#BA94FF</color>
+    <color name="PinkishViolet">#A46FC5</color>
+    <!-- Pink Color Scheme -->
+    <color name="DarkPink">#9B0538</color>
+    <color name="MediumPink">#FF0E60</color>
+    <color name="LightPink">#DB316B</color>
+    <color name="ReddishPink">#E20C2C</color>
+
+    <color name="transparent100">#00000000</color>
+</resources>

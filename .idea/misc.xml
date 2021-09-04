@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/about_icon.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/add_file_icon.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/add_icon.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/delete_icon.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/grey_background.xml" value="0.5625" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3425925925925926" />
+        <entry key="app/src/main/res/drawable/icon_check.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/icon_pdf.xml" value="0.7074074074074074" />
+        <entry key="app/src/main/res/drawable/lock_icon.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/move_file_icon.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/rename_icon.xml" value="0.5625" />
+        <entry key="app/src/main/res/drawable/round_coloured_ripple.xml" value="0.7703703703703704" />
+        <entry key="app/src/main/res/drawable/round_ripple.xml" value="0.7731481481481481" />
+        <entry key="app/src/main/res/drawable/round_ripple_borderless.xml" value="0.5625" />
+        <entry key="app/src/main/res/drawable/round_ripple_borderless2.xml" value="0.7703703703703704" />
+        <entry key="app/src/main/res/drawable/round_ripple_borderless_18dp.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/round_ripple_borderless_25dp.xml" value="0.5625" />
+        <entry key="app/src/main/res/drawable/round_ripple_borderless_50dp.xml" value="0.5625" />
+        <entry key="app/src/main/res/drawable/round_ripple_borderless_5dp.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/round_ripple_borderless_bottom25dp.xml" value="0.7703703703703704" />
+        <entry key="app/src/main/res/drawable/round_ripple_translucent_border_5dp.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/drawable/round_ripple_transparent_5dp.xml" value="0.7074074074074074" />
+        <entry key="app/src/main/res/drawable/scrollbar_style.xml" value="0.8629629629629629" />
+        <entry key="app/src/main/res/drawable/vault_icon.xml" value="0.8825331971399387" />
+        <entry key="app/src/main/res/layout/actionbar_view.xml" value="0.6417572463768116" />
+        <entry key="app/src/main/res/layout/activity_image_viewer.xml" value="0.5299145299145299" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.536" />
+        <entry key="app/src/main/res/layout/appbar.xml" value="0.6417572463768116" />
+        <entry key="app/src/main/res/layout/content_image_viewer.xml" value="0.5421875" />
+        <entry key="app/src/main/res/layout/dialog_about.xml" value="0.5421875" />
+        <entry key="app/src/main/res/layout/dialog_create_vault.xml" value="0.4487369985141159" />
+        <entry key="app/src/main/res/layout/dialog_file_details.xml" value="0.4207427536231884" />
+        <entry key="app/src/main/res/layout/dialog_open_vault.xml" value="0.6" />
+        <entry key="app/src/main/res/layout/dialog_rename.xml" value="0.6680253623188406" />
+        <entry key="app/src/main/res/layout/dialog_theme.xml" value="0.6240942028985508" />
+        <entry key="app/src/main/res/layout/explore_vault_icon_layout.xml" value="0.7010869565217391" />
+        <entry key="app/src/main/res/layout/fragment_explore_vault.xml" value="0.4566813509544787" />
+        <entry key="app/src/main/res/layout/fragment_vault.xml" value="0.4654919236417034" />
+        <entry key="app/src/main/res/layout/itemselect_options.xml" value="0.6417572463768116" />
+        <entry key="app/src/main/res/layout/options_appbar.xml" value="0.72" />
+        <entry key="app/src/main/res/layout/round_textview.xml" value="0.6417572463768116" />
+        <entry key="app/src/main/res/layout/search_appbar.xml" value="0.4260847628657921" />
+        <entry key="app/src/main/res/layout/theme_layout.xml" value="0.6385869565217391" />
+        <entry key="app/src/main/res/layout/vault_icon_layout.xml" value="0.5600706713780919" />
+        <entry key="app/src/main/res/menu/context_menu.xml" value="0.5421875" />
+        <entry key="app/src/main/res/menu/delete_menu.xml" value="0.6777041942604857" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
