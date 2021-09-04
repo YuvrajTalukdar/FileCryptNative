@@ -136,6 +136,7 @@ public class explore_vault_fragment extends Fragment {
     public void onResume() {
         super.onResume();
         set_vault_status();
+        System.out.println("refresh recycler view1");
         if(mainActivity.vault_data_list.size()!=data_size)
         {
             System.out.println("refresh recycler view");

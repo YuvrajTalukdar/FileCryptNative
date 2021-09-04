@@ -19,13 +19,12 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
-import android.util.Size;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,20 +45,16 @@ import com.google.android.material.tabs.TabLayout;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -104,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements
     private SharedPreferences settings_reader;
     private SharedPreferences.Editor settings_editor;
     //other vars
-    protected ArrayList<explore_vault_fragment.vault_data> vault_data_list=new ArrayList<>();
+    protected ArrayList<explore_vault_fragment.vault_data> vault_data_list;
     private database db;
     private AES aes_handler;
     private String password="",vault_path="";
@@ -119,8 +114,6 @@ public class MainActivity extends AppCompatActivity implements
 
         db=new database(this);
         aes_handler=new AES();
-        //AES.aes_data decrypted_data=aes_handler.decrypt("5uQUExVX7Lz1bXFdbLPW5Dsg0b2vyb1LZVXDg9KsshU=","123");
-        //System.out.println("data== "+decrypted_data.get_decrypted_data());
 
         //initializing search appbar
         actionBar = getSupportActionBar();
@@ -132,7 +125,6 @@ public class MainActivity extends AppCompatActivity implements
         initialize_search_appbar();
 
         //initializing tabs
-
         viewPager2 = findViewById(R.id.view_pager);
         tabLayout = findViewById(R.id.tab_layout);
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -143,8 +135,18 @@ public class MainActivity extends AppCompatActivity implements
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if(tab.getPosition()==0 && fab_clicked)
-                {   onFabButtonClicked(); }
+                if(tab.getPosition()==0)
+                {
+                    if(selected_item_index_list.size()>0)
+                    {   initialize_search_appbar();}
+                    if(fab_clicked)
+                    {   onFabButtonClicked();}
+                }
+                else if(tab.getPosition()==1 && selected_item_index_list.size()>0)
+                {
+                    initialize_option_app_bar();
+                    selected_item_count.setText(Integer.toString(selected_item_index_list.size()));
+                }
                 tab_id=tab.getPosition();
                 viewPager2.setCurrentItem(tab.getPosition());
             }
@@ -171,10 +173,14 @@ public class MainActivity extends AppCompatActivity implements
         fab=findViewById(R.id.fab);
         add_file_fab=findViewById(R.id.add_file_fab);
         add_file_fab.setOnClickListener(view -> {
-            Intent add_file_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            add_file_intent.setType("*/*");
-            add_file_intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE,true);
-            add_file_saf.launch(add_file_intent);
+            if(selected_item_index_list.size()==0) {
+                Intent add_file_intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                add_file_intent.setType("*/*");
+                add_file_intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+                add_file_saf.launch(add_file_intent);
+            }
+            else
+            {   Toast.makeText(this, "Unselect all files first", Toast.LENGTH_SHORT).show();}
         });
         add_file_textview=findViewById(R.id.add_files_textView);
         lock_vault_fab=findViewById(R.id.lock_vault_fab);
@@ -185,6 +191,9 @@ public class MainActivity extends AppCompatActivity implements
         fab.setOnClickListener(view -> {
             onFabButtonClicked();
         });
+
+        FileCryptNativeApplication application=(FileCryptNativeApplication) getApplicationContext();
+        vault_data_list=application.vault_data_list;
     }
     /*--------------------------------------------------------------------Option Menu----------------------------------------------------------------------------------------*/
     @Override
@@ -196,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.theme_item)
-        {   System.out.println("theme!!!");
+        {
             themeDialog=new dialog_theme();
             themeDialog.show(getSupportFragmentManager(),"theme_dialog");
         }
@@ -211,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements
     public void theme_selected(int theme_code)
     {
         save_theme_preference(theme_code);
-        super.recreate();
+        recreate();
     }
     @Override
     public int get_theme_code()
@@ -411,7 +420,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /*-------------------------------------------------------------------Search appbar functions---------------------------------------------------------------------------------*/
+    private String search_text="";
+    private short delay = 800;
+    private long last_text_edit = 0;
+    private Handler handler = new Handler();
+    private Runnable input_finish_checker = () -> {
+        if (System.currentTimeMillis() > (last_text_edit + delay - 500)) {
+            search();
+        }
+    };
+    private void search()
+    {
+        System.out.println("check45==="+search_text);
+        if(viewPager2.getCurrentItem()==0)
+        {
 
+        }
+        else if(viewPager2.getCurrentItem()==1)
+        {
+
+        }
+    }
     private void initialize_search_appbar()
     {
         actionBar.setCustomView(search_appbar);
@@ -422,11 +451,15 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                search_text=charSequence.toString();
+                handler.removeCallbacks(input_finish_checker);
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {}
+            public void afterTextChanged(Editable editable) {
+                last_text_edit = System.currentTimeMillis();
+                handler.postDelayed(input_finish_checker, delay);
+            }
         });
     }
     /*-------------------------------------------------------------------Item selection functions--------------------------------------------------------------------------------*/
