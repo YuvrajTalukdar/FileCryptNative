@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements
     private dialog_open_vault openVaultDialog;
     private dialog_rename renameDialog;
     private dialog_file_details fileDetailsDialog;
+    private dialog_about dialogAbout;
     //appbar
     private View search_appbar;
     private EditText search_edit_text;
@@ -238,7 +239,10 @@ public class MainActivity extends AppCompatActivity implements
             themeDialog.show(getSupportFragmentManager(),"theme_dialog");
         }
         else if(id == R.id.about_item)
-        {   System.out.println("about!!!");}
+        {
+            dialogAbout=new dialog_about();
+            dialogAbout.show(getSupportFragmentManager(),"about_dialog");
+        }
         return super.onOptionsItemSelected(item);
     }
 

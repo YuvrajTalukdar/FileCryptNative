@@ -1,7 +1,5 @@
 package com.yuvraj.filecryptnative;
 
-import android.util.Base64;
-
 import org.apache.commons.codec.binary.Base32;
 
 import java.nio.charset.StandardCharsets;

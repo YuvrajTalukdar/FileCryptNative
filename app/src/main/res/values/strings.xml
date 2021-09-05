@@ -1,6 +1,7 @@
 <resources>
     <!--Common strings-->
     <string name="app_name">File Crypt</string>
+    <string name="version">Version 1.0</string>
     <string name="ok">OK</string>
     <string name="cancel">CANCEL</string>
     <string name="password">Enter Password</string>
@@ -37,6 +38,6 @@
     <string name="file_size">File Size</string>
     <string name="import_date">Import Date</string>
     <string name="title_activity_image_viewer">image_viewer_activity</string>
-    <!-- Progress bar strings -->
-    <string name="progress_bar">Progress</string>
+    <!-- About dialog strings -->
+    <string name="about_description">For more information on the project: <a href="https://github.com/YuvrajTalukdar/FileCryptNative">https://github.com/YuvrajTalukdar/FileCryptNative</a>  \n\nFile Crypt is a Free as in Freedom software for securely storing you files for Android 6.0+.\n\nFile Crypt is released under the terms of GNU General Public License v3 (GPLv3): <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a>\n\nThanks to davemorrissey for subsampling-scale-image-view.  <a href="https://github.com/davemorrissey/subsampling-scale-image-view"> https://github.com/davemorrissey/subsampling-scale-image-view </a></string>
 </resources>

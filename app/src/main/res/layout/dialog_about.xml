@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/round_ripple_borderless_18dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@drawable/round_ripple_borderless_18dp">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about"
+            android:textColor="?attr/LightColor"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/round_ripple_borderless_bottom25dp"
+        android:gravity="center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/appIconImageView"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:background="@drawable/app_logo"/>
+        <TextView
+            android:id="@+id/about_under_icon_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:gravity="center"
+            android:textColor="?attr/MediumColor"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/about_version_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/version"
+            android:gravity="center"
+            android:textColor="?attr/InverseBackgroundColor"
+            android:layout_marginTop="10dp"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/description_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/about_description"
+            android:padding="10dp"
+            android:textColor="?attr/DeepColor"
+            android:layout_marginTop="8dp"
+            android:autoLink="web"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/about_dialog_ok_button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="1.375"
+            android:textColor="@color/Black"
+            android:background="@drawable/round_coloured_ripple"
+            android:text="@string/ok" />
+
+    </LinearLayout>
+
+</androidx.appcompat.widget.LinearLayoutCompat>
