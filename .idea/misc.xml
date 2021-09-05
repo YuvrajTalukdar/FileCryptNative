@@ -40,9 +40,11 @@
         <entry key="app/src/main/res/layout/dialog_theme.xml" value="0.6240942028985508" />
         <entry key="app/src/main/res/layout/explore_vault_icon_layout.xml" value="0.7010869565217391" />
         <entry key="app/src/main/res/layout/fragment_explore_vault.xml" value="0.4566813509544787" />
+        <entry key="app/src/main/res/layout/fragment_first.xml" value="0.6619791666666667" />
         <entry key="app/src/main/res/layout/fragment_vault.xml" value="0.4654919236417034" />
         <entry key="app/src/main/res/layout/itemselect_options.xml" value="0.6417572463768116" />
         <entry key="app/src/main/res/layout/options_appbar.xml" value="0.72" />
+        <entry key="app/src/main/res/layout/progress_bar.xml" value="0.4260847628657921" />
         <entry key="app/src/main/res/layout/round_textview.xml" value="0.6417572463768116" />
         <entry key="app/src/main/res/layout/search_appbar.xml" value="0.4260847628657921" />
         <entry key="app/src/main/res/layout/theme_layout.xml" value="0.6385869565217391" />

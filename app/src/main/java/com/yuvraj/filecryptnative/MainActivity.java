@@ -2,7 +2,6 @@ package com.yuvraj.filecryptnative;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -11,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
@@ -38,6 +39,10 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -56,9 +61,12 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity implements
     dialog_theme.theme_dialog_listener,
@@ -107,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements
     private AES aes_handler;
     private String password,vault_path="";
     FileCryptNativeApplication application;
+    private final Executor mExecutor = Executors.newSingleThreadExecutor();
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -277,6 +287,7 @@ public class MainActivity extends AppCompatActivity implements
             vault_info vaultInfo = db.get_last_entered_data();
             vaultFragment = (vault_fragment) getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
             vaultFragment.add_data(vaultInfo);
+            vaultFragment.set_status();
             //create folder and pass_check_file
             String appPath = this.getApplicationContext().getFilesDir().getAbsolutePath();
             appPath = appPath + "/" + vault_name;
@@ -320,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements
                 application.password=password;
                 openVaultDialog.dismiss();
                 this.vault_path=appPath+"/"+vault_name;
-                load_vault();
+                load_vault_starter();
             }
             else
             {   Toast.makeText(this, "Wrong Password", Toast.LENGTH_SHORT).show();}
@@ -374,7 +385,7 @@ public class MainActivity extends AppCompatActivity implements
                     {   fileUriList.add(clipDate.getItemAt(a).getUri());}
                 }
                 onFabButtonClicked();
-                add_files(fileUriList);
+                add_files_starter(fileUriList);
             }
         }
     );
@@ -540,6 +551,12 @@ public class MainActivity extends AppCompatActivity implements
                 about_button.setVisibility(View.GONE);
                 rename_button.setVisibility(View.GONE);
             }
+            if(!all_item_selected && selected_item_index_list.size()+1==vault_data_list.size())
+            {
+                all_item_selected=true;
+                select_all_item.setChecked(true);
+                //vault_data_list.get(index).selected=true;
+            }
         }
         selected_item_index_list.add(index);
     }
@@ -558,6 +575,12 @@ public class MainActivity extends AppCompatActivity implements
             {
                 about_button.setVisibility(View.VISIBLE);
                 rename_button.setVisibility(View.VISIBLE);
+            }
+            if(all_item_selected && selected_item_index_list.size()>0)
+            {
+                all_item_selected=false;
+                select_all_item.setChecked(false);
+                //vault_data_list.get(index).selected=false;
             }
             selected_item_count.setText(Integer.toString(selected_item_index_list.size()));
         }
@@ -693,55 +716,81 @@ public class MainActivity extends AppCompatActivity implements
         return getResources().getDrawable(imageResource,getTheme());
     }
 
-    private void load_vault()
+    private Task<Void> load_vault(DocumentFile[] file_list)
     {
-        short first_chunk_size=8224;
-        short size=8208;
-        byte[] first_chunk_buffer=new byte[first_chunk_size];
-        byte[] buffer=new byte[size];
+        return Tasks.call(mExecutor,()->{
+            try{
+                short first_chunk_size=8224;
+                short size=8208;
+                byte[] first_chunk_buffer=new byte[first_chunk_size];
+                byte[] buffer=new byte[size];
+
+                for(int a=0;a<file_list.length;a++)
+                {
+                    explore_vault_fragment.vault_data data=new explore_vault_fragment.vault_data();
+                    if(!file_list[a].getName().equals("pass_check"))
+                    {
+                        try{
+                            if(vault_data_list.size()==0)
+                            {   data.id=0;}
+                            else
+                            {   data.id=vault_data_list.get(vault_data_list.size()-1).id+1;}
+                            data.encrypted_file_name=file_list[a].getName();
+                            data.file_name=aes_handler.decrypt(file_list[a].getName(),password).get_decrypted_data();
+                            data.encrypted_file_path=vault_path+"/"+data.encrypted_file_name;
+                            data.encrypted_file_path=vault_path+"/"+data.encrypted_file_name;
+                            //get thumbnail
+                            if(is_image(data.file_name))
+                            {
+                                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                                InputStream ins=getContentResolver().openInputStream(file_list[a].getUri());
+                                BufferedInputStream bins = new BufferedInputStream(ins);
+                                //first chunk
+                                bins.read(first_chunk_buffer);
+                                baos.write(aes_handler.decrypt_bytes(first_chunk_buffer,password));
+                                //rest of the data
+                                while(bins.read(buffer)!=-1)
+                                {   baos.write(aes_handler.decrypt_bytes(buffer,password));}
+                                //Bitmap bmp= BitmapFactory.decodeByteArray(baos.toByteArray(), 0,baos.toByteArray().length);
+                                data.thumb_nail=Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(baos.toByteArray(), 0,baos.toByteArray().length),80,80,false);
+                                baos.close();
+
+                                aes_handler.shutdown_byte_operations();
+                                ins.close();
+                                bins.close();
+                            }
+                            else
+                            {   data.icon=get_icon(data.file_name);}
+                        }
+                        catch(Exception e)
+                        {   e.printStackTrace();}
+                        vault_data_list.add(data);
+                    }
+                    progressDialog.setProgress(a+1);
+                }
+
+            }
+            catch(Exception e)
+            {   e.printStackTrace();}
+            return null;
+        });
+    }
+    private void load_vault_starter()
+    {
         DocumentFile vault_dir=DocumentFile.fromFile(new File(vault_path));
         DocumentFile[] file_list = vault_dir.listFiles();
-        for(int a=0;a<file_list.length;a++)
-        {
-            explore_vault_fragment.vault_data data=new explore_vault_fragment.vault_data();
-            if(!file_list[a].getName().equals("pass_check"))
-            {
-                try{
-                    if(vault_data_list.size()==0)
-                    {   data.id=0;}
-                    else
-                    {   data.id=vault_data_list.get(vault_data_list.size()-1).id+1;}
-                    data.encrypted_file_name=file_list[a].getName();
-                    data.file_name=aes_handler.decrypt(file_list[a].getName(),password).get_decrypted_data();
-                    data.encrypted_file_path=vault_path+"/"+data.encrypted_file_name;
-                    //get thumbnail
-                    if(is_image(data.file_name))
-                    {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        InputStream ins=getContentResolver().openInputStream(file_list[a].getUri());
-                        BufferedInputStream bins = new BufferedInputStream(ins);
-                        //first chunk
-                        bins.read(first_chunk_buffer);
-                        baos.write(aes_handler.decrypt_bytes(first_chunk_buffer,password));
-                        //rest of the data
-                        while(bins.read(buffer)!=-1)
-                        {   baos.write(aes_handler.decrypt_bytes(buffer,password));}
-                        //Bitmap bmp= BitmapFactory.decodeByteArray(baos.toByteArray(), 0,baos.toByteArray().length);
-                        data.thumb_nail=Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(baos.toByteArray(), 0,baos.toByteArray().length),80,80,false);
-                        baos.close();
-
-                        aes_handler.shutdown_byte_operations();
-                        ins.close();
-                        bins.close();
-                    }
-                    else
-                    {   data.icon=get_icon(data.file_name);}
-                }
-                catch(Exception e)
-                {   e.printStackTrace();}
-                vault_data_list.add(data);
-            }
-        }
+        progressDialog=new ProgressDialog(this,R.style.ProgressBar);
+        progressDialog.setTitle("Progress");
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        progressDialog.setMax(file_list.length-1);
+        progressDialog.setProgress(0);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        load_vault(file_list).addOnCompleteListener(task -> {
+            progressDialog.dismiss();
+            Toast.makeText(this,"Vault Opened", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private boolean is_file_present(String new_file_name)
@@ -755,76 +804,103 @@ public class MainActivity extends AppCompatActivity implements
         return is_present;
     }
 
-    private void add_files(ArrayList<Uri> uri_list)
+    private Task<Void> add_files(ArrayList<Uri> uri_list)
     {
-        short size=8192;
-        byte[] buffer=new byte[size];
-        boolean is_image;
-        int start=vault_data_list.size()-1;
-        ByteArrayOutputStream baos;
-        for(int a=0;a<uri_list.size();a++)
-        {
-            try {
-                DocumentFile documentFile =  DocumentFile.fromSingleUri(this,uri_list.get(a));
-                if(!is_file_present(documentFile.getName()))
+        return Tasks.call(mExecutor,()->{
+            try{
+                short size=8192;
+                byte[] buffer=new byte[size];
+                boolean is_image;
+
+                ByteArrayOutputStream baos;
+                for(int a=0;a<uri_list.size();a++)
                 {
-                    is_image = false;
-                    if (is_image(documentFile.getName())) {
-                        is_image = true;
-                    }
-                    //fill up the data
-                    explore_vault_fragment.vault_data data = new explore_vault_fragment.vault_data();
-                    if (vault_data_list.size() == 0) {
-                        data.id = 0;
-                    } else {
-                        data.id = vault_data_list.get(vault_data_list.size() - 1).id;
-                    }
-                    data.file_name = documentFile.getName();
+                    try {
+                        DocumentFile documentFile =  DocumentFile.fromSingleUri(this,uri_list.get(a));
+                        if(!is_file_present(documentFile.getName()))
+                        {
+                            is_image = false;
+                            if (is_image(documentFile.getName())) {
+                                is_image = true;
+                            }
+                            //fill up the data
+                            explore_vault_fragment.vault_data data = new explore_vault_fragment.vault_data();
+                            if (vault_data_list.size() == 0) {
+                                data.id = 0;
+                            } else {
+                                data.id = vault_data_list.get(vault_data_list.size() - 1).id;
+                            }
+                            data.file_name = documentFile.getName();
 
-                    baos = new ByteArrayOutputStream();
-                    InputStream ins = getContentResolver().openInputStream(uri_list.get(a));
-                    BufferedInputStream bins = new BufferedInputStream(ins);
-                    data.encrypted_file_name = aes_handler.encrypt(documentFile.getName(), password);
-                    data.encrypted_file_path = vault_path + "/" + data.encrypted_file_name;
-                    FileOutputStream fots=new FileOutputStream(data.encrypted_file_path);
-                    BufferedOutputStream bops = new BufferedOutputStream(fots);
-                    while (bins.read(buffer) != -1) {
-                        if (is_image) {
-                            baos.write(buffer);
+                            baos = new ByteArrayOutputStream();
+                            InputStream ins = getContentResolver().openInputStream(uri_list.get(a));
+                            BufferedInputStream bins = new BufferedInputStream(ins);
+                            data.encrypted_file_name = aes_handler.encrypt(documentFile.getName(), password);
+                            data.encrypted_file_path = vault_path + "/" + data.encrypted_file_name;
+                            FileOutputStream fots=new FileOutputStream(data.encrypted_file_path);
+                            BufferedOutputStream bops = new BufferedOutputStream(fots);
+                            while (bins.read(buffer) != -1) {
+                                if (is_image) {
+                                    baos.write(buffer);
+                                }
+                                byte[] encryptedByte = aes_handler.encrypt_bytes(buffer, password);
+                                //System.out.println("length="+encryptedByte.length);
+                                bops.write(encryptedByte);
+                            }
+                            if (is_image) {
+                                data.thumb_nail = Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.toByteArray().length), 80, 80, false);
+                            } else {
+                                data.icon = get_icon(data.file_name);
+                            }
+                            vault_data_list.add(data);
+                            fots.close();
+                            baos.close();
+                            bops.close();
+                            ins.close();
+                            bins.close();
+                            aes_handler.shutdown_byte_operations();
                         }
-                        byte[] encryptedByte = aes_handler.encrypt_bytes(buffer, password);
-                        //System.out.println("length="+encryptedByte.length);
-                        bops.write(encryptedByte);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    if (is_image) {
-                        data.thumb_nail = Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.toByteArray().length), 80, 80, false);
-                    } else {
-                        data.icon = get_icon(data.file_name);
-                    }
-                    vault_data_list.add(data);
-                    fots.close();
-                    baos.close();
-                    bops.close();
-                    ins.close();
-                    bins.close();
-                    aes_handler.shutdown_byte_operations();
+                    progressDialog.setProgress(a+1);
                 }
-
-            } catch (Exception e) {
-                e.printStackTrace();
             }
-        }
-        exploreVaultFragment= (explore_vault_fragment) getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
-        if(start==0)
-        {   exploreVaultFragment.set_vault_status();}
-        exploreVaultFragment.notify_item_range_inserted(0,vault_data_list.size()-1);
-
+            catch(Exception e)
+            {   e.printStackTrace();}
+            return null;
+        });
+    }
+    private void add_files_starter(ArrayList<Uri> uri_list)
+    {
+        progressDialog=new ProgressDialog(this,R.style.ProgressBar);
+        progressDialog.setTitle("Progress");
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        progressDialog.setMax(uri_list.size());
+        progressDialog.setProgress(0);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        int finalStart = vault_data_list.size();
+        add_files(uri_list).addOnCompleteListener(task -> {
+            progressDialog.dismiss();
+            exploreVaultFragment= (explore_vault_fragment) getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
+            if(finalStart ==0)
+            {   exploreVaultFragment.set_vault_status();}
+            if(vault_data_list.size()==1 || vault_data_list.size()-finalStart==1)
+            {   exploreVaultFragment.notify_item_inserted(vault_data_list.size()-1);}
+            else
+            {   exploreVaultFragment.notify_item_range_inserted(finalStart,vault_data_list.size()-1);}
+            Toast.makeText(this,uri_list.size()+" File Added", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void delete_file()
     {
         exploreVaultFragment= (explore_vault_fragment) getSupportFragmentManager().findFragmentByTag("f" + viewPager2.getCurrentItem());
-        for(int a=0;a<selected_item_index_list.size();a++)
+        Collections.sort(selected_item_index_list);
+        for(int a=selected_item_index_list.size()-1;a>=0;a--)
         {
             File file=new File(vault_data_list.get(selected_item_index_list.get(a)).encrypted_file_path);
             file.delete();
@@ -836,6 +912,8 @@ public class MainActivity extends AppCompatActivity implements
         rename_button.setVisibility(View.VISIBLE);
         initialize_search_appbar();
         exploreVaultFragment.select_all_item(false);
+        if(vault_data_list.size()==0)
+        {   exploreVaultFragment.set_vault_status();}
         //exploreVaultFragment.notify_change();
         Toast.makeText(this, selected_item_index_list.size()+" File Deleted", Toast.LENGTH_SHORT).show();
         selected_item_index_list.clear();
@@ -877,47 +955,69 @@ public class MainActivity extends AppCompatActivity implements
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
-                    move_file_out(result.getData().getData());
+                    move_file_out_starter(result.getData().getData());
                 }
                 else
                 {   Toast.makeText(this, "Destination not selected", Toast.LENGTH_SHORT).show();}
             }
     );
 
-    private void move_file_out(Uri destination_uri)
+    private Task<Void> move_file_out(Uri destination_uri)
     {
-        short first_chunk_size=8224;
-        short size=8208;
-        byte[] first_chunk_buffer=new byte[first_chunk_size];
-        byte[] buffer=new byte[size];
-        DocumentFile dest=DocumentFile.fromTreeUri(this,destination_uri);
-        this.grantUriPermission(getPackageName(), destination_uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        for(int a=0;a<selected_item_index_list.size();a++)
-        {
-            try {
-                FileInputStream fins=new FileInputStream(vault_data_list.get(selected_item_index_list.get(a)).encrypted_file_path);
-                BufferedInputStream bins = new BufferedInputStream(fins);
-                DocumentFile new_out_file=dest.createFile("",vault_data_list.get(selected_item_index_list.get(a)).file_name);
-                OutputStream ops=getContentResolver().openOutputStream(new_out_file.getUri());
-                BufferedOutputStream bops = new BufferedOutputStream(ops);
-                bins.read(first_chunk_buffer);
-                bops.write(aes_handler.decrypt_bytes(first_chunk_buffer,password));
-                while (bins.read(buffer) != -1) {
-                    byte[] encryptedByte = aes_handler.decrypt_bytes(buffer, password);
-                    //System.out.println("length="+encryptedByte.length);
-                    bops.write(encryptedByte);
+        return Tasks.call(mExecutor,()->{
+            try{
+                short first_chunk_size=8224;
+                short size=8208;
+                byte[] first_chunk_buffer=new byte[first_chunk_size];
+                byte[] buffer=new byte[size];
+                DocumentFile dest=DocumentFile.fromTreeUri(this,destination_uri);
+                this.grantUriPermission(getPackageName(), destination_uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                for(int a=0;a<selected_item_index_list.size();a++)
+                {
+                    try {
+                        FileInputStream fins=new FileInputStream(vault_data_list.get(selected_item_index_list.get(a)).encrypted_file_path);
+                        BufferedInputStream bins = new BufferedInputStream(fins);
+                        DocumentFile new_out_file=dest.createFile("",vault_data_list.get(selected_item_index_list.get(a)).file_name);
+                        OutputStream ops=getContentResolver().openOutputStream(new_out_file.getUri());
+                        BufferedOutputStream bops = new BufferedOutputStream(ops);
+                        bins.read(first_chunk_buffer);
+                        bops.write(aes_handler.decrypt_bytes(first_chunk_buffer,password));
+                        while (bins.read(buffer) != -1) {
+                            byte[] encryptedByte = aes_handler.decrypt_bytes(buffer, password);
+                            //System.out.println("length="+encryptedByte.length);
+                            bops.write(encryptedByte);
+                        }
+                        fins.close();
+                        bops.close();
+                        bins.close();
+                        ops.close();
+                        aes_handler.shutdown_byte_operations();
+                    }
+                    catch(Exception e)
+                    {   e.printStackTrace();}
+                    progressDialog.setProgress(a+1);
                 }
-                fins.close();
-                bops.close();
-                bins.close();
-                ops.close();
-                aes_handler.shutdown_byte_operations();
             }
             catch(Exception e)
             {   e.printStackTrace();}
-        }
-        Toast.makeText(this, "Files moved out", Toast.LENGTH_SHORT).show();
-        delete_file();
+            return null;
+        });
+    }
+    private void move_file_out_starter(Uri destination_uri)
+    {
+        progressDialog=new ProgressDialog(this,R.style.ProgressBar);
+        progressDialog.setTitle("Progress");
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        progressDialog.setMax(selected_item_index_list.size());
+        progressDialog.setProgress(0);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        move_file_out(destination_uri).addOnCompleteListener(task -> {
+            progressDialog.dismiss();
+            Toast.makeText(this, "Files moved out", Toast.LENGTH_SHORT).show();
+            delete_file();
+        });
     }
 
     @Override

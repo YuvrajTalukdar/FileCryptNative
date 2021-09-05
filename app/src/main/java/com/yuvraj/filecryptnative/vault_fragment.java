@@ -64,15 +64,19 @@ public class vault_fragment extends Fragment {
 
             @Override
             public void delete_vault_option(int vault_id,String vault_name,View view) {
-                PopupMenu popup = new PopupMenu(getContext(), view);
-                popup.getMenuInflater().inflate(R.menu.delete_menu, popup.getMenu());
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    public boolean onMenuItemClick(MenuItem item) {
-                        delete_vault_dialog(vault_id,vault_name);
-                        return true;
-                    }
-                });
-                popup.show();
+                if(!mainActivity.is_vault_open()) {
+                    PopupMenu popup = new PopupMenu(getContext(), view);
+                    popup.getMenuInflater().inflate(R.menu.delete_menu, popup.getMenu());
+                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        public boolean onMenuItemClick(MenuItem item) {
+                            delete_vault_dialog(vault_id, vault_name);
+                            return true;
+                        }
+                    });
+                    popup.show();
+                }
+                else
+                {   Toast.makeText(getContext(), "Close already open vault first", Toast.LENGTH_SHORT).show();}
             }
         });
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -140,7 +144,8 @@ public class vault_fragment extends Fragment {
         }
         catch (Exception e)
         {}
-        System.out.println("path==="+appPath);
+        if(vault_info_list.size()==0)
+        {   set_status();}
         Toast.makeText(getContext(), "Vault Deleted", Toast.LENGTH_SHORT).show();
     }
 

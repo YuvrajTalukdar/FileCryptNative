@@ -1,5 +1,6 @@
 package com.yuvraj.filecryptnative;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +20,7 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import androidx.core.content.ContextCompat;
 
@@ -25,6 +29,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class image_viewer_activity extends AppCompatActivity {
 
@@ -34,6 +40,9 @@ public class image_viewer_activity extends AppCompatActivity {
     private boolean display_actionBar=true;
     private String password;
     private AES aes_handler;
+    SubsamplingScaleImageView imageView;
+    private final Executor mExecutor = Executors.newSingleThreadExecutor();
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +63,7 @@ public class image_viewer_activity extends AppCompatActivity {
         title.setSpan(new ForegroundColorSpan(map.get("MediumColor")), 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         actionBar.setTitle(title);
 
-        SubsamplingScaleImageView imageView = findViewById(R.id.imageView);
-        imageView.setImage(ImageSource.bitmap(get_image_bitmap()));
+        imageView = findViewById(R.id.imageView);
         imageView.setOnClickListener(view -> {
             if(display_actionBar)
             {
@@ -68,6 +76,7 @@ public class image_viewer_activity extends AppCompatActivity {
                 display_actionBar=true;
             }
         });
+        get_image_bitmap_starter();
     }
     @Override
     public void onBackPressed() {
@@ -84,36 +93,53 @@ public class image_viewer_activity extends AppCompatActivity {
         }
     }
 
-    private Bitmap get_image_bitmap() {
-        short first_chunk_size=8224;
-        short size=8208;
-        byte[] first_chunk_buffer=new byte[first_chunk_size];
-        byte[] buffer=new byte[size];
-        Bitmap bitmap;
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            FileInputStream fin = new FileInputStream(encrypted_file_path);
-            BufferedInputStream bins = new BufferedInputStream(fin);
-            //first chunk
-            bins.read(first_chunk_buffer);
-            baos.write(aes_handler.decrypt_bytes(first_chunk_buffer, password));
-            //rest of the data
-            while (bins.read(buffer) != -1) {
-                baos.write(aes_handler.decrypt_bytes(buffer, password));
-            }
-            bitmap = BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.toByteArray().length);
-            baos.close();
-            aes_handler.shutdown_byte_operations();
-            fin.close();
-            bins.close();
+    private Task<Bitmap> get_image_bitmap()
+    {
+        return Tasks.call(mExecutor,()->{
+            short first_chunk_size=8224;
+            short size=8208;
+            byte[] first_chunk_buffer=new byte[first_chunk_size];
+            byte[] buffer=new byte[size];
+            Bitmap bitmap;
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                FileInputStream fin = new FileInputStream(encrypted_file_path);
+                BufferedInputStream bins = new BufferedInputStream(fin);
+                //first chunk
+                bins.read(first_chunk_buffer);
+                baos.write(aes_handler.decrypt_bytes(first_chunk_buffer, password));
+                //rest of the data
+                while (bins.read(buffer) != -1) {
+                    baos.write(aes_handler.decrypt_bytes(buffer, password));
+                }
+                bitmap = BitmapFactory.decodeByteArray(baos.toByteArray(), 0, baos.toByteArray().length);
+                baos.close();
+                aes_handler.shutdown_byte_operations();
+                fin.close();
+                bins.close();
 
-            return bitmap;
-        }
-        catch(Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
+                return bitmap;
+            }
+            catch(Exception e)
+            {
+                e.printStackTrace();
+                return null;
+            }
+        });
+    }
+
+    private void get_image_bitmap_starter() {
+        progressDialog=new ProgressDialog(this,R.style.ProgressBar);
+        progressDialog.setTitle("Progress");
+        progressDialog.setMessage("Opening Image");
+        progressDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT,WindowManager.LayoutParams.WRAP_CONTENT);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+        get_image_bitmap().addOnCompleteListener(task -> {
+            imageView.setImage(ImageSource.bitmap(task.getResult()));
+            progressDialog.dismiss();
+        });
     }
 
     private void set_theme(int theme_code)
